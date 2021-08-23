@@ -1,0 +1,6 @@
+Create a Landmark Model
+Create the Row View
+Customize the Row Preview
+Create the List of Landmarks
+Make the List Dynamic
+Set Up Navigation Between List and Detail
