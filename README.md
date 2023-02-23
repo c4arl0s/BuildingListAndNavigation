@@ -4,7 +4,7 @@
 
 1. [x] [1. Create a Landmark Model](https://github.com/c4arl0s/buildinglistandnavigation#1-Create-a-Landmark-Model)
 2. [x] [2. Create the Row View](https://github.com/c4arl0s/buildinglistandnavigation#2-Create-the-Row-View)
-3. [ ] [3. Customize the Row Preview](https://github.com/c4arl0s/buildinglistandnavigation#3-Customize-the-Row-Preview)
+3. [x] [3. Customize the Row Preview](https://github.com/c4arl0s/buildinglistandnavigation#3-Customize-the-Row-Preview)
 4. [ ] [4. Create the List of Landmarks](https://github.com/c4arl0s/buildinglistandnavigation#4-Create-the-List-of-Landmarks)
 5. [ ] [5. Make the List Dynamic](https://github.com/c4arl0s/buildinglistandnavigation#5-Make-the-List-Dynamic)
 
@@ -18,7 +18,7 @@ Use the completed project from the previous tutorial and the resources available
 
 # Step 1
 
-Drag landmarkData.json in the downloaded files’ Resources folder into your project’s navigation pane; in the dialog that appears, select **“Copy items if needed”** and the Landmarks target, and then click Finish.
+Drag `landmarkData.json` in the downloaded files Resources folder into your project’s navigation pane; in the dialog that appears, select **“Copy items if needed”** and the Landmarks target, and then click Finish.
 
 You’ll use this sample data throughout the remainder of this tutorial, and for all that follow.
 
@@ -54,7 +54,7 @@ The new images join the one for Turtle Rock that you added in the previous tutor
 
 # Step 5
 
-Add an imageName property to read the name of the image from the data, and a computed image property that loads an image from the asset catalog.
+Add an `imageName` property to read the name of the image from the data, and a computed image property that loads an image from the asset catalog.
 
 ```swift
 import Foundation
@@ -357,5 +357,148 @@ struct LandmarkRow_Previews: PreviewProvider {
 <img width="983" alt="Screenshot 2023-02-21 at 9 59 52 p m" src="https://user-images.githubusercontent.com/24994818/220518445-23f1bc00-63c8-4048-ad4c-9c5b950a0e08.png">
 
 # 3. [Customize the Row Preview](https://github.com/c4arl0s/buildinglistandnavigation#buildinglistandnavigation---content)
+
+Xcode’s canvas automatically recognizes and displays any type in the current editor that conforms to the `PreviewProvider` protocol. A preview provider returns one or more views, with options to configure the size and device.
+
+You can customize the returned content from a preview provider to render exactly the previews that are most helpful to you.
+
+<img width="432" alt="Screenshot 2023-02-22 at 9 48 06 p m" src="https://user-images.githubusercontent.com/24994818/220817314-ed7af686-0235-4061-a035-ce307edccb18.png">
+
+# Step 1
+
+In `LandmarkRow_Previews`, update the landmark parameter to be the second element in the `landmarks` array.
+
+```swift
+import SwiftUI
+
+struct LandmarkRow: View {
+    var landmark: Landmark
+    var body: some View {
+        HStack {
+            landmark.image
+                .resizable()
+                .frame(width: 50, height: 50)
+            Text(landmark.name)
+            Spacer()
+        }
+    }
+}
+
+struct LandmarkRow_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkRow(landmark: landmarks[1])
+    }
+}
+```
+
+The preview immediately changes to show the second sample landmark instead of the first.
+
+<img width="851" alt="Screenshot 2023-02-22 at 9 50 43 p m" src="https://user-images.githubusercontent.com/24994818/220817550-f07933ee-7718-4910-a32d-329fa2450062.png">
+
+# Step 2
+
+Use the `previewLayout(_:)` modifier to set a `size` that approximates a row in a list.
+
+```swift
+import SwiftUI
+
+struct LandmarkRow: View {
+    var landmark: Landmark
+    var body: some View {
+        HStack {
+            landmark.image
+                .resizable()
+                .frame(width: 50, height: 50)
+            Text(landmark.name)
+            Spacer()
+        }
+    }
+}
+
+struct LandmarkRow_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkRow(landmark: landmarks[1])
+            .previewLayout(.fixed(width: 300, height: 70))
+    }
+}
+```
+
+You can use a `Group` to return multiple previews from a preview provider.
+
+<img width="844" alt="Screenshot 2023-02-22 at 9 54 00 p m" src="https://user-images.githubusercontent.com/24994818/220817925-beb967cf-bb84-4dd5-b27e-910e9453d6b9.png">
+
+# Step 3
+
+Wrap the returned row in a `Group`, and add the first row back again.
+
+```swift
+import SwiftUI
+
+struct LandmarkRow: View {
+    var landmark: Landmark
+    var body: some View {
+        HStack {
+            landmark.image
+                .resizable()
+                .frame(width: 50, height: 50)
+            Text(landmark.name)
+            Spacer()
+        }
+    }
+}
+
+struct LandmarkRow_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            LandmarkRow(landmark: landmarks[0])
+                .previewLayout(.fixed(width: 300, height: 70))
+            LandmarkRow(landmark: landmarks[1])
+                .previewLayout(.fixed(width: 300, height: 70))
+        }
+    }
+}
+```
+
+`Group` is a container for grouping view content. Xcode renders the group’s child views as separate previews in the canvas.
+
+<img width="883" alt="Screenshot 2023-02-22 at 9 57 27 p m" src="https://user-images.githubusercontent.com/24994818/220818283-6d871563-e7be-4e04-8283-aca9eebfa0e8.png">
+
+# Step 4
+
+To simplify the code, move the `previewLayout(_:)` call to the outside of the group’s child declarations.
+
+```swift
+import SwiftUI
+
+struct LandmarkRow: View {
+    var landmark: Landmark
+    var body: some View {
+        HStack {
+            landmark.image
+                .resizable()
+                .frame(width: 50, height: 50)
+            Text(landmark.name)
+            Spacer()
+        }
+    }
+}
+
+struct LandmarkRow_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            LandmarkRow(landmark: landmarks[0])
+            LandmarkRow(landmark: landmarks[1])
+        }
+        .previewLayout(.fixed(width: 300, height: 70))
+    }
+}
+```
+
+A view’s children inherit the view’s contextual settings, such as preview configurations.
+
+The code you write in a preview provider only changes what Xcode displays in the canvas.
+
+<img width="877" alt="Screenshot 2023-02-22 at 10 01 50 p m" src="https://user-images.githubusercontent.com/24994818/220818710-60e86583-4636-4c6c-a17f-6754872aad1a.png">
+
 # 4. [Create the List of Landmarks](https://github.com/c4arl0s/buildinglistandnavigation#buildinglistandnavigation---content)
 # 5. [Make the List Dynamic](https://github.com/c4arl0s/buildinglistandnavigation#buildinglistandnavigation---content)
