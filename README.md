@@ -5,8 +5,11 @@
 1. [x] [1. Create a Landmark Model](https://github.com/c4arl0s/buildinglistandnavigation#1-Create-a-Landmark-Model)
 2. [x] [2. Create the Row View](https://github.com/c4arl0s/buildinglistandnavigation#2-Create-the-Row-View)
 3. [x] [3. Customize the Row Preview](https://github.com/c4arl0s/buildinglistandnavigation#3-Customize-the-Row-Preview)
-4. [ ] [4. Create the List of Landmarks](https://github.com/c4arl0s/buildinglistandnavigation#4-Create-the-List-of-Landmarks)
-5. [ ] [5. Make the List Dynamic](https://github.com/c4arl0s/buildinglistandnavigation#5-Make-the-List-Dynamic)
+4. [x] [4. Create the List of Landmarks](https://github.com/c4arl0s/buildinglistandnavigation#4-Create-the-List-of-Landmarks)
+5. [x] [5. Make the List Dynamic](https://github.com/c4arl0s/buildinglistandnavigation#5-Make-the-List-Dynamic)
+6. [x] [6. Set Up Navigation Between List and Detail]()
+7. [x] [7. Pass Data into Child Views]()
+8. [x] [8. Generate Previews Dynamically]()
 
 # [BuildingListAndNavigation](https://github.com/c4arl0s/buildinglistandnavigation#buildinglistandnavigation---content)
 
@@ -540,3 +543,134 @@ The preview shows the two landmarks rendered in a list style that’s appropriat
 <img width="1045" alt="Screenshot 2023-02-22 at 10 26 04 p m" src="https://user-images.githubusercontent.com/24994818/220821234-06fa5020-0190-4004-8884-3c7a810442d0.png">
 
 # 5. [Make the List Dynamic](https://github.com/c4arl0s/buildinglistandnavigation#buildinglistandnavigation---content)
+
+Instead of specifying a list’s elements individually, you can generate rows directly from a collection.
+
+You can create a list that displays the elements of a collection by passing your collection of data and a closure that provides a view for each element in the collection. The list transforms each element in the collection into a child view by using the supplied closure.
+
+<img width="365" alt="Screenshot 2023-02-22 at 10 33 58 p m" src="https://user-images.githubusercontent.com/24994818/220822064-255b711c-3720-40f4-ba01-aeb4eaa13a55.png">
+
+# Step 1
+
+Remove the two static landmark rows, and instead pass the model data’s landmarks array to the `List` initializer.
+
+```swift
+import SwiftUI
+
+struct LandmarkList: View {
+    var body: some View {
+        List(landmarks, id: \.id) { landmark in
+            
+        }
+    }
+}
+
+struct LandmarkList_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkList()
+    }
+}
+```
+
+Lists work with identifiable data. You can make your data identifiable in one of two ways: 
+
+1. by passing along with your data a key path to a property that uniquely identifies each element, 
+2. or by making your data type conform to the `Identifiable` protocol.
+
+<img width="1044" alt="Screenshot 2023-02-22 at 10 39 21 p m" src="https://user-images.githubusercontent.com/24994818/220822595-fc189677-9f7c-4a5c-a00f-b312aa018481.png">
+
+# Step 2
+
+Complete the dynamically-generated list by returning a LandmarkRow from the closure.
+
+```swift
+import SwiftUI
+
+struct LandmarkList: View {
+    var body: some View {
+        List(landmarks, id: \.id) { landmark in
+            LandmarkRow(landmark: landmark)
+        }
+    }
+}
+
+struct LandmarkList_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkList()
+    }
+}
+```
+
+This creates one `LandmarkRow` for each element in the landmarks array.
+
+<img width="1032" alt="Screenshot 2023-02-22 at 10 42 34 p m" src="https://user-images.githubusercontent.com/24994818/220822913-c92fc1f8-880f-4712-8a9c-910385678092.png">
+
+Next, you’ll simplify the List code by adding `Identifiable` conformance to the `Landmark` type.
+
+# Step 3
+
+Switch to `Landmark.swift` and declare conformance to the `Identifiable` protocol.
+
+The `Landmark` data already has the `id` property required by `Identifiable` protocol; you only need to add a property to decode it when reading the data.
+
+```swift
+import Foundation
+import SwiftUI
+import CoreLocation
+
+struct Landmark: Hashable, Codable, Identifiable {
+    var id: Int
+    var name: String
+    var park: String
+    var state: String
+    var description: String
+
+    private var imageName: String
+    var image: Image {
+        Image(imageName)
+    }
+
+    private var coordinates: Coordinates
+    var locationCoordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude)
+    }
+
+    struct Coordinates: Hashable, Codable {
+        var latitude: Double
+        var longitude: Double
+    }
+}
+```
+
+# Step 4
+
+Switch back to `LandmarkList.swift` and remove the `id` parameter.
+
+```swift
+import SwiftUI
+
+struct LandmarkList: View {
+    var body: some View {
+        List(landmarks) { landmark in
+            LandmarkRow(landmark: landmark)
+        }
+    }
+}
+
+struct LandmarkList_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkList()
+    }
+}
+```
+
+<img width="1046" alt="Screenshot 2023-02-22 at 11 34 32 p m" src="https://user-images.githubusercontent.com/24994818/220828449-2fd60237-d9ff-4622-8376-fd586e47fe70.png">
+
+From now on, you’ll be able to use collections of `Landmark` elements directly.
+
+# 6. [Set Up Navigation Between List and Detail]()
+# 7. [Pass Data into Child Views]()
+# 8. [Generate Previews Dynamically]()
+
