@@ -8,8 +8,8 @@
 4. [x] [4. Create the List of Landmarks](https://github.com/c4arl0s/buildinglistandnavigation#4-Create-the-List-of-Landmarks)
 5. [x] [5. Make the List Dynamic](https://github.com/c4arl0s/buildinglistandnavigation#5-Make-the-List-Dynamic)
 6. [x] [6. Set Up Navigation Between List and Detail]()
-7. [x] [7. Pass Data into Child Views]()
-8. [x] [8. Generate Previews Dynamically]()
+7. [ ] [7. Pass Data into Child Views]()
+8. [ ] [8. Generate Previews Dynamically]()
 
 # [BuildingListAndNavigation](https://github.com/c4arl0s/buildinglistandnavigation#buildinglistandnavigation---content)
 
@@ -671,6 +671,182 @@ struct LandmarkList_Previews: PreviewProvider {
 From now on, you’ll be able to use collections of `Landmark` elements directly.
 
 # 6. [Set Up Navigation Between List and Detail]()
+
+The list renders properly, but you can’t tap an individual landmark to see that landmark’s detail page yet.
+
+You add navigation capabilities to a list by embedding it in a `NavigationView`, and then nesting each row in a `NavigationLink` to set up a transtition to a destination view.
+
+<img width="462" alt="Screenshot 2023-02-23 at 10 15 24 p m" src="https://user-images.githubusercontent.com/24994818/221090378-9c367f86-c552-4fce-a73d-992867d9366f.png">
+
+Prepare a detail view using the content you created in the previous tutorial and update the main content view to display the list view instead.
+
+# Step 1
+
+Create a new SwiftUI view named `LandmarkDetailView.swift`.
+
+# Step 2
+
+Copy the contents of the body property from `ContentView` into `LandmarkDetail`.
+
+```swift
+import SwiftUI
+
+struct LandmarkDetailView: View {
+    var body: some View {
+        VStack {
+            MapView()
+                .ignoresSafeArea(edges: .top)
+                .frame(height: 300)
+            
+            CircleImage()
+                .offset(y: -130)
+                .padding(.bottom, -130)
+            
+            VStack(alignment: .leading) {
+                Text("Turtle, Rock!")
+                    .font(.title)
+                    .foregroundColor(.blue)
+                HStack {
+                    Text("Joshua Tree National Park")
+                        .font(.subheadline)
+                    Spacer()
+                    Text("California")
+                        .font(.subheadline)
+                }
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                
+                Divider()
+                
+                Text("About Turtle Rock")
+                    .font(.title2)
+                
+                Text("Description goes here")
+            }
+            .padding()
+            
+            Spacer()
+        }
+    }
+}
+
+struct LandmarkDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkDetailView()
+    }
+}
+```
+
+<img width="914" alt="Screenshot 2023-02-23 at 10 24 05 p m" src="https://user-images.githubusercontent.com/24994818/221091320-eb337b13-bfa1-455b-8558-8684bf50dc11.png">
+
+# Step 3
+
+Change `ContentView` to instead display `LandmarkList`
+
+```swift
+import SwiftUI
+
+struct ContentView: View {
+    var body: some View {
+        LandmarkList()
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
+```
+
+In the next few steps, you’ll add navigation among your list and detail views.
+
+# Step 4
+
+Embed the dynamically generated list of landmarks in a `NavigationView`.
+
+```swift
+import SwiftUI
+
+struct LandmarkList: View {
+    var body: some View {
+        NavigationView {
+            List(landmarks) { landmark in
+                LandmarkRow(landmark: landmark)
+            }
+        }
+    }
+}
+
+struct LandmarkList_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkList()
+    }
+}
+```
+
+# Step 5
+
+Call the `navigationTitle(_:)` modifier method to set the `title` of the navigation bar when displaying the list.
+
+```swift
+import SwiftUI
+
+struct LandmarkList: View {
+    var body: some View {
+        NavigationView {
+            List(landmarks) { landmark in
+                LandmarkRow(landmark: landmark)
+            }
+            .navigationTitle("Landmarks")
+        }
+    }
+}
+
+struct LandmarkList_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkList()
+    }
+}
+```
+
+<img width="992" alt="Screenshot 2023-02-23 at 10 41 23 p m" src="https://user-images.githubusercontent.com/24994818/221093419-6089fa12-6259-49e4-b500-ad9b2f2a63c1.png">
+
+# Step 6
+
+Inside the list’s closure, wrap the returned row in a `NavigationLink`, specifying the `LandmarkDetailView` view as the destination.
+
+```swift
+import SwiftUI
+
+struct LandmarkList: View {
+    var body: some View {
+        NavigationView {
+            List(landmarks) { landmark in
+                NavigationLink {
+                    LandmarkDetailView()
+                } label: {
+                    LandmarkRow(landmark: landmark)
+                }
+            }
+            .navigationTitle("Landmarks")
+        }
+    }
+}
+
+struct LandmarkList_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkList()
+    }
+}
+```
+
+# Step 7
+
+You can try out the navigation directly in the preview by switching to live mode. Click the Live Preview button and tap a landmark to visit the detail page.
+
+![Screen Recording 2023-02-23 at 11 04 15 p m 2023-02-23 11_07_43 p m](https://user-images.githubusercontent.com/24994818/221096940-b6a1b109-fa58-4cf3-9086-c684a19fd5a7.gif)
+
 # 7. [Pass Data into Child Views]()
 # 8. [Generate Previews Dynamically]()
 
