@@ -7,9 +7,9 @@
 3. [x] [3. Customize the Row Preview](https://github.com/c4arl0s/buildinglistandnavigation#3-Customize-the-Row-Preview)
 4. [x] [4. Create the List of Landmarks](https://github.com/c4arl0s/buildinglistandnavigation#4-Create-the-List-of-Landmarks)
 5. [x] [5. Make the List Dynamic](https://github.com/c4arl0s/buildinglistandnavigation#5-Make-the-List-Dynamic)
-6. [x] [6. Set Up Navigation Between List and Detail]()
-7. [ ] [7. Pass Data into Child Views]()
-8. [ ] [8. Generate Previews Dynamically]()
+6. [x] [6. Set Up Navigation Between List and Detail](https://github.com/c4arl0s/buildinglistandnavigation#6-set-up-navigation-between-list-and-detail)
+7. [x] [7. Pass Data into Child Views](https://github.com/c4arl0s/buildinglistandnavigation#7-pass-data-into-child-views)
+8. [ ] [8. Generate Previews Dynamically](https://github.com/c4arl0s/buildinglistandnavigation#8-generate-previews-dynamically)
 
 # [BuildingListAndNavigation](https://github.com/c4arl0s/buildinglistandnavigation#buildinglistandnavigation---content)
 
@@ -847,6 +847,436 @@ You can try out the navigation directly in the preview by switching to live mode
 
 ![Screen Recording 2023-02-23 at 11 04 15 p m 2023-02-23 11_07_43 p m](https://user-images.githubusercontent.com/24994818/221096940-b6a1b109-fa58-4cf3-9086-c684a19fd5a7.gif)
 
-# 7. [Pass Data into Child Views]()
-# 8. [Generate Previews Dynamically]()
+# 7. [Pass Data into Child Views](https://github.com/c4arl0s/BuildingListAndNavigation#buildinglistandnavigation---content)
+
+The `LandmarkDetail` view still uses hard-coded details to show its landmark. Just like `LandmarkRow`, the `LandmarkDetail` type and the views it comprises need to use a landmark property as the source for their data.
+
+<img width="244" alt="Screenshot 2023-03-07 at 10 36 59 p m" src="https://user-images.githubusercontent.com/24994818/223620843-3427a932-1f9f-4ebd-bfb5-37d4b762bccb.png">
+
+Starting with the child views, you’ll convert `CircleImage`, `MapView`, and then `LandmarkDetail` to display data that’s passed in, rather than hard-coding each row.
+
+# Step 1
+
+In `CircleImage.swift`, add a stored image property to `CircleImage`.
+
+<img width="557" alt="Screenshot 2023-03-07 at 10 45 20 p m" src="https://user-images.githubusercontent.com/24994818/223621896-ac237213-a832-4512-85c0-fd432e13842f.png">
+
+```swift
+import SwiftUI
+
+struct CircleImage: View {
+    var image: Image
+    
+    var body: some View {
+        image
+            .clipShape(Circle())
+            .overlay {
+                Circle().stroke(.white, lineWidth: 4)
+            }
+            .shadow(radius: 7)
+    }
+}
+
+struct CircleImage_Previews: PreviewProvider {
+    static var previews: some View {
+        CircleImage()
+    }
+}
+```
+
+This is a common pattern when building views using SwiftUI. Your custom views will often wrap and encapsulate a series of modifiers for a particular view.
+
+# Step 2
+
+Update the preview provider to pass the image of Turtle Rock.
+
+<img width="636" alt="Screenshot 2023-03-07 at 10 54 12 p m" src="https://user-images.githubusercontent.com/24994818/223623009-cdf66fa5-3c77-4256-b37f-d4a82104750a.png">
+
+Even though you’ve fixed the preview logic, the preview fails to update because the build fails. The detail view, which instantiates a circle image, needs an input parameter as well.
+
+```swift
+import SwiftUI
+
+struct CircleImage: View {
+    var image: Image
+    
+    var body: some View {
+        image
+            .clipShape(Circle())
+            .overlay {
+                Circle().stroke(.white, lineWidth: 4)
+            }
+            .shadow(radius: 7)
+    }
+}
+
+struct CircleImage_Previews: PreviewProvider {
+    static var previews: some View {
+        CircleImage(image: Image("turtlerock"))
+    }
+}
+```
+
+# Step
+
+In `MapView.swift`, add a coordinate property to `MapView` and update the preview provider to pass a fixed coordinate.
+
+<img width="1187" alt="Screenshot 2023-03-07 at 11 02 13 p m" src="https://user-images.githubusercontent.com/24994818/223623990-8458262b-d876-4472-bc33-22adaa7c22d4.png">
+
+```swift
+import SwiftUI
+import MapKit
+
+struct MapView: View {
+    var coordinate: CLLocationCoordinate2D
+    @State private var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 34.011_286, longitude: -116.166_868), span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+    )
+    
+    var body: some View {
+        Map(coordinateRegion: $region)
+    }
+}
+
+struct MapView_Previews: PreviewProvider {
+    static var previews: some View {
+        MapView(coordinate: CLLocationCoordinate2D(latitude: 34.011_286, longitude: -116.166_868))
+    }
+}
+```
+
+This change also affects the build because the detail view has a map view that needs the new parameter. You’ll fix the detail view soon.
+
+# Step 4
+
+Add a method that updates the region based on a coordinate value.
+
+```swift
+import SwiftUI
+import MapKit
+
+struct MapView: View {
+    var coordinate: CLLocationCoordinate2D
+    @State private var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 34.011_286, longitude: -116.166_868), span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+    )
+    
+    var body: some View {
+        Map(coordinateRegion: $region)
+    }
+    
+    private func setRegion(_ coordinate: CLLocationCoordinate2D) {
+        region = MKCoordinateRegion(
+            center: coordinate,
+            span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+        )
+    }
+}
+
+struct MapView_Previews: PreviewProvider {
+    static var previews: some View {
+        MapView(coordinate: CLLocationCoordinate2D(latitude: 34.011_286, longitude: -116.166_868))
+    }
+}
+```
+
+# Step 5
+
+Add an onAppear view modifier to the map that triggers a calculation of the region based on the current coordinate.
+
+```swift
+import SwiftUI
+import MapKit
+
+struct MapView: View {
+    var coordinate: CLLocationCoordinate2D
+    @State private var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 34.011_286, longitude: -116.166_868), span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+    )
+    
+    var body: some View {
+        Map(coordinateRegion: $region)
+            .onAppear {
+                setRegion(coordinate)
+            }
+    }
+    
+    private func setRegion(_ coordinate: CLLocationCoordinate2D) {
+        region = MKCoordinateRegion(
+            center: coordinate,
+            span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+        )
+    }
+}
+
+struct MapView_Previews: PreviewProvider {
+    static var previews: some View {
+        MapView(coordinate: CLLocationCoordinate2D(latitude: 34.011_286, longitude: -116.166_868))
+    }
+}
+```
+
+# Step 6
+
+In `LandmarkDetail.swift`, add a Landmark property to the `LandmarkDetail` type.
+
+<img width="762" alt="Screenshot 2023-03-07 at 11 22 56 p m" src="https://user-images.githubusercontent.com/24994818/223626563-8411a61d-ab28-490a-ad7f-c2175d0fdd32.png">
+
+```swift
+import SwiftUI
+
+struct LandmarkDetailView: View {
+    var landmark: Landmark
+    
+    var body: some View {
+        VStack {
+            MapView()
+                .ignoresSafeArea(edges: .top)
+                .frame(height: 300)
+            
+            CircleImage()
+                .offset(y: -130)
+                .padding(.bottom, -130)
+            
+            VStack(alignment: .leading) {
+                Text("Turtle, Rock!")
+                    .font(.title)
+                    .foregroundColor(.blue)
+                HStack {
+                    Text("Joshua Tree National Park")
+                        .font(.subheadline)
+                    Spacer()
+                    Text("California")
+                        .font(.subheadline)
+                }
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                
+                Divider()
+                
+                Text("About Turtle Rock")
+                    .font(.title2)
+                
+                Text("Description goes here")
+            }
+            .padding()
+            
+            Spacer()
+        }
+    }
+}
+
+struct LandmarkDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkDetailView(landmark: landmarks[0])
+    }
+}
+```
+
+# Step 7
+
+In `LandmarkList.swift`, pass the current landmark to the destination `LandmarkDetail`.
+
+```swift
+import SwiftUI
+
+struct LandmarkList: View {
+    var body: some View {
+        NavigationView {
+            List(landmarks) { landmark in
+                NavigationLink {
+                    LandmarkDetailView(landmark: landmark)
+                } label: {
+                    LandmarkRow(landmark: landmark)
+                }
+            }
+            .navigationTitle("Landmarks")
+        }
+    }
+}
+
+struct LandmarkList_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkList()
+    }
+}
+```
+
+# Step 8
+
+In the `LandmarkDetailView` file, pass the required data to your custom types.
+
+```swift
+import SwiftUI
+
+struct LandmarkDetailView: View {
+    var landmark: Landmark
+    
+    var body: some View {
+        VStack {
+            MapView(coordinate: landmark.locationCoordinate)
+                .ignoresSafeArea(edges: .top)
+                .frame(height: 300)
+            
+            CircleImage(image: landmark.image)
+                .offset(y: -130)
+                .padding(.bottom, -130)
+            
+            VStack(alignment: .leading) {
+                Text(landmark.name)
+                    .font(.title)
+                    .foregroundColor(.blue)
+                HStack {
+                    Text(landmark.park)
+                        .font(.subheadline)
+                    Spacer()
+                    Text(landmark.state)
+                        .font(.subheadline)
+                }
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                
+                Divider()
+                
+                Text("About \(landmark.name)")
+                    .font(.title2)
+                
+                Text(landmark.description)
+            }
+            .padding()
+            
+            Spacer()
+        }
+    }
+}
+
+struct LandmarkDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkDetailView(landmark: landmarks[0])
+    }
+}
+```
+
+<img width="520" alt="Screenshot 2023-03-07 at 11 58 07 p m" src="https://user-images.githubusercontent.com/24994818/223631461-8688143c-469e-40a4-a7f2-98a2a515402c.png">
+
+# Step 9
+
+Change the container from a `VStack` to a `ScrollView` so the user can scroll through the descriptive content, and delete the `Spacer`, which you no longer need.
+
+```swift
+import SwiftUI
+
+struct LandmarkDetailView: View {
+    var landmark: Landmark
+    
+    var body: some View {
+        ScrollView {
+            MapView(coordinate: landmark.locationCoordinate)
+                .ignoresSafeArea(edges: .top)
+                .frame(height: 300)
+            
+            CircleImage(image: landmark.image)
+                .offset(y: -130)
+                .padding(.bottom, -130)
+            
+            VStack(alignment: .leading) {
+                Text(landmark.name)
+                    .font(.title)
+                    .foregroundColor(.blue)
+                HStack {
+                    Text(landmark.park)
+                        .font(.subheadline)
+                    Spacer()
+                    Text(landmark.state)
+                        .font(.subheadline)
+                }
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                
+                Divider()
+                
+                Text("About \(landmark.name)")
+                    .font(.title2)
+                
+                Text(landmark.description)
+            }
+            .padding()
+            
+            Spacer()
+        }
+    }
+}
+
+struct LandmarkDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkDetailView(landmark: landmarks[0])
+    }
+}
+```
+
+![scrollview](https://user-images.githubusercontent.com/24994818/223633005-ae5e2a85-a87a-469e-bd8d-90dd1ba32eaa.gif)
+
+# Step 10
+
+Finally, call the `navigationTitle(_:)` modifier to give the navigation bar a title when showing the detail view, and the `navigationBarTitleDisplayMode(_:)` modifier to make the title appear inline.
+
+```swift
+import SwiftUI
+
+struct LandmarkDetailView: View {
+    var landmark: Landmark
+    
+    var body: some View {
+        ScrollView {
+            MapView(coordinate: landmark.locationCoordinate)
+                .ignoresSafeArea(edges: .top)
+                .frame(height: 300)
+            
+            CircleImage(image: landmark.image)
+                .offset(y: -130)
+                .padding(.bottom, -130)
+            
+            VStack(alignment: .leading) {
+                Text(landmark.name)
+                    .font(.title)
+                    .foregroundColor(.blue)
+                HStack {
+                    Text(landmark.park)
+                        .font(.subheadline)
+                    Spacer()
+                    Text(landmark.state)
+                        .font(.subheadline)
+                }
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                
+                Divider()
+                
+                Text("About \(landmark.name)")
+                    .font(.title2)
+                
+                Text(landmark.description)
+            }
+            .padding()
+        }
+        .navigationTitle(landmark.name)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+        
+}
+
+struct LandmarkDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        LandmarkDetailView(landmark: landmarks[0])
+    }
+}
+```
+
+# Step 11 
+
+Switch to the live preview to see the detail view show the correct landmarks when you navigate from the list.
+
+<img width="520" alt="Screenshot 2023-03-08 at 12 17 07 a m" src="https://user-images.githubusercontent.com/24994818/223634571-6b5aeb67-5d9d-4f2f-a84c-09b987c5ff1d.png">
+
+# 8. [Generate Previews Dynamically](https://github.com/c4arl0s/BuildingListAndNavigation#buildinglistandnavigation---content)
 
