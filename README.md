@@ -1280,3 +1280,8 @@ Switch to the live preview to see the detail view show the correct landmarks whe
 
 # 8. [Generate Previews Dynamically](https://github.com/c4arl0s/BuildingListAndNavigation#buildinglistandnavigation---content)
 
+Next, you’ll render previews of the list view for different device configurations.
+
+By default, previews render at the size of the device in the active scheme. You can render for different devices by changing the target, or by overriding the device in the canvas. You can also explore other preview variations, like device orientation.
+
+
