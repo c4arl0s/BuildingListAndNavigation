@@ -9,7 +9,7 @@
 5. [x] [5. Make the List Dynamic](https://github.com/c4arl0s/buildinglistandnavigation#5-Make-the-List-Dynamic)
 6. [x] [6. Set Up Navigation Between List and Detail](https://github.com/c4arl0s/buildinglistandnavigation#6-set-up-navigation-between-list-and-detail)
 7. [x] [7. Pass Data into Child Views](https://github.com/c4arl0s/buildinglistandnavigation#7-pass-data-into-child-views)
-8. [ ] [8. Generate Previews Dynamically](https://github.com/c4arl0s/buildinglistandnavigation#8-generate-previews-dynamically)
+8. [x] [8. Generate Previews Dynamically](https://github.com/c4arl0s/buildinglistandnavigation#8-generate-previews-dynamically)
 
 # [BuildingListAndNavigation](https://github.com/c4arl0s/buildinglistandnavigation#buildinglistandnavigation---content)
 
@@ -1280,3 +1280,36 @@ Switch to the live preview to see the detail view show the correct landmarks whe
 
 # 8. [Generate Previews Dynamically](https://github.com/c4arl0s/BuildingListAndNavigation#buildinglistandnavigation---content)
 
+Next, you’ll render previews of the list view for different device configurations.
+
+By default, previews render at the size of the device in the active scheme. You can render for different devices by changing the target, or by overriding the device in the canvas. You can also explore other preview variations, like device orientation.
+
+<img width="420" alt="Screenshot 2023-10-30 at 9 55 54 p m" src="https://github.com/c4arl0s/BuildingListAndNavigation/assets/24994818/6ce88bbf-3450-4028-a4ec-8a312dbd0df7">
+
+# Step 1
+
+Change the device selector to make the preview display an iPad.
+
+In portait orientation, the `NavigationSplitView` displays the detail pane by default, and provides a button in the toolbar to reveal the sidebar.
+
+<img width="633" alt="Screenshot 2023-10-30 at 10 03 12 p m" src="https://github.com/c4arl0s/BuildingListAndNavigation/assets/24994818/f70ea961-36c0-4444-8c0c-b6f367ca7bfb">
+
+# Step 2
+
+Tap the toolbar button to reveal the sidebar, and try navigating to one of the landmarks.
+
+The detail view changes to the selected landmark under the sidebar. The sidebar remains visible until you tap somewhere in the detail view.
+
+<img width="622" alt="Screenshot 2023-10-30 at 10 05 34 p m" src="https://github.com/c4arl0s/BuildingListAndNavigation/assets/24994818/b5760522-6789-46b8-a282-c2956c685f02">
+
+# Step 3
+
+In the canvas, select the Device Settings and enable the Landscape Left orientation.
+
+In landscape orientation, the `NavigationSplitView` displays the sidebar and detail panes side-by-side.
+
+<img width="632" alt="Screenshot 2023-10-30 at 10 08 16 p m" src="https://github.com/c4arl0s/BuildingListAndNavigation/assets/24994818/19fc2151-db05-4dc9-9a51-cc8d30495db5">
+
+# Step 4
+
+Experiment with different devices and configurations in the Device Settings to see how your views look under other conditions.
