@@ -924,7 +924,7 @@ struct CircleImage_Previews: PreviewProvider {
 }
 ```
 
-# Step
+# Step 3
 
 In `MapView.swift`, add a coordinate property to `MapView` and update the preview provider to pass a fixed coordinate.
 
@@ -1089,7 +1089,7 @@ import SwiftUI
 
 struct LandmarkList: View {
     var body: some View {
-        NavigationView {
+        NavigationSplitView {
             List(landmarks) { landmark in
                 NavigationLink {
                     LandmarkDetailView(landmark: landmark)
@@ -1098,6 +1098,8 @@ struct LandmarkList: View {
                 }
             }
             .navigationTitle("Landmarks")
+        } detail: {
+            Text("Select a Landmark")
         }
     }
 }
