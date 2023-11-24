@@ -763,17 +763,24 @@ In the next few steps, you’ll add navigation among your list and detail views.
 
 # Step 4
 
-Embed the dynamically generated list of landmarks in a `NavigationView`.
+Embed the dynamically generated list of landmarks in a `NavigationSplitView`.
 
 ```swift
 import SwiftUI
 
 struct LandmarkList: View {
     var body: some View {
-        NavigationView {
+        NavigationSplitView {
             List(landmarks) { landmark in
-                LandmarkRow(landmark: landmark)
+                NavigationLink {
+                    LandmarkDetailView()
+                } label: {
+                    LandmarkRow(landmark: landmark)
+                }
             }
+            .navigationTitle("Landmarks")
+        } detail: {
+            Text("Select a Landmark")
         }
     }
 }
@@ -917,7 +924,7 @@ struct CircleImage_Previews: PreviewProvider {
 }
 ```
 
-# Step
+# Step 3
 
 In `MapView.swift`, add a coordinate property to `MapView` and update the preview provider to pass a fixed coordinate.
 
@@ -1082,7 +1089,7 @@ import SwiftUI
 
 struct LandmarkList: View {
     var body: some View {
-        NavigationView {
+        NavigationSplitView {
             List(landmarks) { landmark in
                 NavigationLink {
                     LandmarkDetailView(landmark: landmark)
@@ -1091,6 +1098,8 @@ struct LandmarkList: View {
                 }
             }
             .navigationTitle("Landmarks")
+        } detail: {
+            Text("Select a Landmark")
         }
     }
 }
